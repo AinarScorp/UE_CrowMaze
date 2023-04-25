@@ -1,1 +1,6 @@
 
+I used blueprints for prototyping the project and slowly moving most of it into Cpp. I think it's very important to learn how to work with both Cpp and BP and how to
+interract between them so that programmers and designers can work together
+I learnt how to make things in Cpp and expose them in blueprints (things like functions, variables, enums)
+I also learnt how to implement NativeBlueprintevents, so that both designers and programmers can make logic for certain functions
+Last thing that I tried implementing was interfaces (for object pooling), but I switched to inheritance, bc it seemed more reasonable in the end (so that I don't need to rewrite my code)

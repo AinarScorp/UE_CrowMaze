@@ -6,6 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Components/SphereComponent.h"
+#include "CrowMaze/ActorComponents/CrowAttributes.h"
 #include "Kismet/GameplayStatics.h"
 
 ACrow::ACrow()
@@ -20,6 +21,7 @@ void ACrow::CreateComponents()
 	SetRootComponent(SphereComponent);
 	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Skeletal Mesh"));
 	SkeletalMeshComponent->SetupAttachment(RootComponent);
+	CrowAttributes = CreateDefaultSubobject<UCrowAttributes>(TEXT("Crow Attributes"));
 }
 
 
@@ -29,11 +31,18 @@ void ACrow::BeginPlay()
 	SetupEnhancedController();
 }
 
+
 float ACrow::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	UE_LOG(LogTemp,Warning, TEXT("CROW GOT HIT"))
+	if (CrowAttributes)
+	{
+		CrowAttributes->ModifyLife(-DamageAmount);
+	}
+	OnDamageTaken.Broadcast();
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
+
 
 void ACrow::SetupEnhancedController() const
 {

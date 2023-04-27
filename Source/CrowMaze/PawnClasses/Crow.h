@@ -6,6 +6,10 @@
 #include "InputActionValue.h"
 #include "GameFramework/Pawn.h"
 #include "Crow.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDamageTakenSignature);
+
+
 class UInputMappingContext;
 class UInputAction;
 UCLASS()
@@ -31,11 +35,15 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	UPROPERTY(BlueprintAssignable)
+	FOnDamageTakenSignature OnDamageTaken;
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USphereComponent> SphereComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> SkeletalMeshComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UCrowAttributes> CrowAttributes;
 
 
 	//functions

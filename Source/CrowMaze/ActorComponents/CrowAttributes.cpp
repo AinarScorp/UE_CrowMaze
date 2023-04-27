@@ -44,7 +44,7 @@ void UCrowAttributes::DrainStamina(float Amount)
 	{
 		CurrentStamina = 0;
 	}
-	OnStaminaChanged.Broadcast(CurrentStamina);
+	OnStaminaChanged.Broadcast(CurrentStamina,GetStaminaPercent());
 }
 
 void UCrowAttributes::RestoreStamina(float Amount)
@@ -60,7 +60,7 @@ void UCrowAttributes::RestoreStamina(float Amount)
 		CurrentStamina = MaxStamina;
 	}
 	
-	OnStaminaChanged.Broadcast(CurrentStamina);
+	OnStaminaChanged.Broadcast(CurrentStamina,GetStaminaPercent());
 }
 
 void UCrowAttributes::ModifyLife(int LifeToAdd)
@@ -69,12 +69,18 @@ void UCrowAttributes::ModifyLife(int LifeToAdd)
 	if (CurrentLife<0 )
 	{
 		CurrentLife = 0;
+		OnPlayerDied.Broadcast();
 	}
 	else if (CurrentLife>MaxLife)
 	{
 		CurrentLife = MaxLife;
 	}
 	OnLifeChanged.Broadcast(CurrentLife);
+}
+
+float UCrowAttributes::GetStaminaPercent()
+{
+	return CurrentStamina/MaxStamina;
 }
 
 

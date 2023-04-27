@@ -6,9 +6,9 @@
 #include "Components/ActorComponent.h"
 #include "CrowAttributes.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStaminaChangedSignature, float, NewStaminaAmount);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStaminaChangedSignature, float, NewStaminaAmount, float, StaminaPercent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLifeChangedSignature, int, NewLife);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDiedSignature);
 
 UCLASS( ClassGroup=(Custom),Blueprintable,BlueprintType, meta=(BlueprintSpawnableComponent) )
 class CROWMAZE_API UCrowAttributes : public UActorComponent
@@ -30,12 +30,15 @@ public:
 	void DrainStamina(float Amount);
 	void RestoreStamina(float Amount);
 	void ModifyLife(int LifeToAdd);
+	float GetStaminaPercent();
 
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnStaminaChangedSignature OnStaminaChanged;
 	UPROPERTY(BlueprintAssignable)
 	FOnLifeChangedSignature OnLifeChanged;
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerDiedSignature OnPlayerDied;
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	int32 MaxLife = 5;

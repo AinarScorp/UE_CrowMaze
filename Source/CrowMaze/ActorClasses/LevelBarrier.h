@@ -25,14 +25,23 @@ public:
 	virtual void SpawnActor_Implementation(const FVector& NewLocation, const FRotator& NewRotation) override;
 	UFUNCTION(BlueprintImplementableEvent)
 	TArray<class UObstaclePoint*> GetObstaclePoints();
-
 	
 	void AttachObstacle(TObjectPtr<class AObstacle> ObstacleToAttach);
+
+	UFUNCTION(BlueprintCallable)
+	void ActivateSpeed(float GameModeSpeed);
 private:
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite, Category = "LevelBarrier|VisibleForDebugging", meta = (AllowPrivateAccess ="true"))
+	float MoveSpeed;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<class AObstacle>> AttachedObstacles;
+
+	
 	
 };
+
+
+
 #pragma region CommnetedOut
 //virtual void SetLifeSpan(float InLifespan) override;
 

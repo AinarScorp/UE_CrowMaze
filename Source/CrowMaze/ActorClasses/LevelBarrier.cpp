@@ -4,7 +4,9 @@
 #include "LevelBarrier.h"
 
 #include "Obstacle.h"
+#include "CrowMaze/CrowMazeGameModeBase.h"
 #include "CrowMaze/SceneComponents/ObstaclePoint.h"
+#include "Kismet/GameplayStatics.h"
 
 ALevelBarrier::ALevelBarrier()
 {
@@ -14,6 +16,16 @@ ALevelBarrier::ALevelBarrier()
 void ALevelBarrier::BeginPlay()
 {
 	Super::BeginPlay();
+	AGameModeBase* GameModeBase = UGameplayStatics::GetGameMode(GetWorld());
+	if (!GameModeBase)
+	{
+		return;
+	}
+	// ACrowMazeGameModeBase* CrowMazeGameMode = Cast<ACrowMazeGameModeBase>(GameModeBase);
+	// if (CrowMazeGameMode)
+	// {
+	// 	CrowMazeGameMode->OnSpeedChanged.AddDynamic(this, &ALevelBarrier::ActivateSpeed);
+	// }
 }
 
 void ALevelBarrier::Tick(float DeltaTime)
@@ -41,6 +53,11 @@ void ALevelBarrier::SpawnActor_Implementation(const FVector& NewLocation, const 
 void ALevelBarrier::AttachObstacle(TObjectPtr<AObstacle> ObstacleToAttach)
 {
 	AttachedObstacles.Add(ObstacleToAttach);
+}
+
+void ALevelBarrier::ActivateSpeed(float GameModeSpeed)
+{
+	MoveSpeed = GameModeSpeed;
 }
 
 

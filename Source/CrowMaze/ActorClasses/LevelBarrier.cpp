@@ -5,7 +5,7 @@
 
 #include "Obstacle.h"
 #include "CrowMaze/CrowMazeGameModeBase.h"
-#include "CrowMaze/SceneComponents/ObstaclePoint.h"
+#include "CrowMaze/PawnClasses/Crow.h"
 #include "Kismet/GameplayStatics.h"
 
 ALevelBarrier::ALevelBarrier()
@@ -16,30 +16,91 @@ ALevelBarrier::ALevelBarrier()
 void ALevelBarrier::BeginPlay()
 {
 	Super::BeginPlay();
+	if (bIsCreated )
+	{
+		return;
+	}
+	SetHalfSize();
+	FindCrowPlayer();
+	
 	AGameModeBase* GameModeBase = UGameplayStatics::GetGameMode(GetWorld());
 	if (!GameModeBase)
 	{
 		return;
 	}
-	// ACrowMazeGameModeBase* CrowMazeGameMode = Cast<ACrowMazeGameModeBase>(GameModeBase);
-	// if (CrowMazeGameMode)
-	// {
-	// 	CrowMazeGameMode->OnSpeedChanged.AddDynamic(this, &ALevelBarrier::ActivateSpeed);
-	// }
+	CrowMazeGameMode = Cast<ACrowMazeGameModeBase>(GameModeBase);
+	if (!CrowMazeGameMode)
+	{
+		return;
+	}
+	CrowMazeGameMode->OnSpeedAgainChanged.AddDynamic(this, &ALevelBarrier::ActivateSpeed);
+
+	if (CrowMazeGameMode->GetGameEndlessIsOn())
+	{
+		ActivateSpeed(CrowMazeGameMode->GetTileMoveSpeed());
+	}
 }
 
 void ALevelBarrier::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	const FVector TargetLocation = GetActorLocation() + MoveDirection * MoveSpeed * DeltaTime;
+	SetActorLocation(TargetLocation);
 }
 
 void ALevelBarrier::SpawnActor_Implementation(const FVector& NewLocation, const FRotator& NewRotation)
 {
 	Super::SpawnActor_Implementation(NewLocation, NewRotation);
+	bHasOverlappedOnce = false;
 	if (AttachedObstacles.Num()<1)
 	{
 		return;
 	}
+	DestroyAttachedObstacles();
+}
+
+void ALevelBarrier::AttachObstacle(TObjectPtr<AObstacle> ObstacleToAttach)
+{
+	AttachedObstacles.Add(ObstacleToAttach);
+}
+
+void ALevelBarrier::FindCrowPlayer()
+{
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(),PlayerTag,OutActors);
+	if (OutActors.Num() <= 0)
+	{
+		return;
+	}
+	CrowPlayer = Cast<ACrow>(OutActors[0]);
+	if (CrowPlayer == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Crow player has not been found"))
+	}
+}
+
+void ALevelBarrier::SetHalfSize_Implementation()
+{
+}
+
+void ALevelBarrier::ActivateSpeed(float GameModeSpeed)
+{
+	MoveSpeed = GameModeSpeed;
+}
+
+void ALevelBarrier::OnBeginOverlapSpawnNewTile(AActor* OtherActor)
+{
+	if ( bHasOverlappedOnce||CrowPlayer == nullptr || OtherActor != CrowPlayer || !CrowMazeGameMode)
+	{
+		return;
+	}
+	CrowMazeGameMode->SpawnTile(false);
+	SetLifeSpan(3.0);
+	bHasOverlappedOnce = true;
+}
+
+void ALevelBarrier::DestroyAttachedObstacles()
+{
 	for (TObjectPtr<AObstacle> Obstacle : AttachedObstacles)
 	{
 		if (Obstacle != nullptr)
@@ -48,16 +109,6 @@ void ALevelBarrier::SpawnActor_Implementation(const FVector& NewLocation, const 
 		}
 	}
 	AttachedObstacles.Empty();
-}
-
-void ALevelBarrier::AttachObstacle(TObjectPtr<AObstacle> ObstacleToAttach)
-{
-	AttachedObstacles.Add(ObstacleToAttach);
-}
-
-void ALevelBarrier::ActivateSpeed(float GameModeSpeed)
-{
-	MoveSpeed = GameModeSpeed;
 }
 
 

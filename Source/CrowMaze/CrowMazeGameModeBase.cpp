@@ -19,13 +19,15 @@ ACrowMazeGameModeBase::ACrowMazeGameModeBase()
 void ACrowMazeGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-	OnScoreAgainChanged.AddDynamic(this, &ACrowMazeGameModeBase::TestWithThommy);
-	const FVector PlayerStartLocation = UGameplayStatics::GetPlayerPawn(GetWorld(),0)->GetActorLocation();
-	TileSpawnLocation = PlayerStartLocation;
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(),MiddlePointTag,OutActors);
+	if (OutActors.Num() <= 0)
+	{
+		return;
+	}
+	//const FVector PlayerStartLocation = UGameplayStatics::GetPlayerPawn(GetWorld(),0)->GetActorLocation();
+	TileSpawnLocation = OutActors[0]->GetActorLocation();
 	SpawnStartingTiles();
-	IncreaseScore();
-	IncreaseScore();
-	IncreaseScore();
 }
 
 void ACrowMazeGameModeBase::SpawnStartingTiles()
@@ -59,6 +61,9 @@ void ACrowMazeGameModeBase::SpawnTile(bool IsStartingTile)
 	}
 	IncreaseScore();
 	IncreaseSpeed();
+	/*TODO: Here you can increase spawn chance if the previous tile didn't create the obstacle, so eventually something will spawn
+		TODO: and you can have spawn chance lower in the beginning 
+	*/
 	if (UKismetMathLibrary::RandomBoolWithWeight(ObstacleSpawnChance))
 	{
 		SpawnObstacle(Cast<ALevelBarrier>(PoolableActor));
@@ -96,12 +101,15 @@ void ACrowMazeGameModeBase::IncreaseScore()
 {
 	CurrentScore++;
 	OnScoreAgainChanged.Broadcast(CurrentScore);
-	//UE_LOG(LogTemp, Error, TEXT("Current score changed to %i"), CurrentScore)
 
 }
 
 bool ACrowMazeGameModeBase::ShouldIncreaseSpeed()
 {
+	if (TileMoveSpeed >=MaxTileSpeed)
+	{
+		return false;
+	}
 	return CurrentScore % SpeedIncreaseDivisorPerScore == 0;
 }
 
@@ -110,14 +118,18 @@ void ACrowMazeGameModeBase::IncreaseSpeed()
 	if (ShouldIncreaseSpeed())
 	{
 		ChangeGameSpeed(TileMoveSpeed+SpeedIncrease);
+		SpeedIncreaseDivisorPerScore+= SpeedIncreaseDivisorPerScoreIncrease;
 	}
 }
 
 void ACrowMazeGameModeBase::ChangeGameSpeed(const float NewSpeed)
 {
 	TileMoveSpeed = NewSpeed;
+	if (TileMoveSpeed >MaxTileSpeed)
+	{
+		TileMoveSpeed = MaxTileSpeed;
+	}
 	OnSpeedAgainChanged.Broadcast(TileMoveSpeed);
-	UE_LOG(LogTemp, Error, TEXT("New passed score is %f"), TileMoveSpeed)
 }
 
 void ACrowMazeGameModeBase::StartEndlessRunner()
@@ -125,18 +137,32 @@ void ACrowMazeGameModeBase::StartEndlessRunner()
 	GameEndlessIsOn = true;
 	ChangeGameSpeed(StartingTileSpeed);
 	OnGameStarted.Broadcast(this);
-	UE_LOG(LogTemp, Error, TEXT("I StartEndlessRunner from C++"))
 
+}
+
+void ACrowMazeGameModeBase::TriggerGameOver_Implementation()
+{
+	
+	ChangeGameSpeed(0);
+	UE_LOG(LogTemp, Warning, TEXT("Game is over with The score of: %i"), CurrentScore)
+	OnGameOver.Broadcast();
 }
 
 void ACrowMazeGameModeBase::TestWithThommy(int NewScoreToTest)
 {
-	//UE_LOG(LogTemp, Error, TEXT("New passed score is %i"), NewScoreToTest)
 }
 
 
 void ACrowMazeGameModeBase::SetHalfSize_Implementation()
 {
-	UE_LOG(LogTemp, Error, TEXT("I Called SetHalfSize from C++"))
+	APoolableActorAbstact* PoolableActor=TerrainPool->GetPooledActor();
+	if (PoolableActor)
+	{
+		if (ALevelBarrier* LevelBarrier = Cast<ALevelBarrier>(PoolableActor))
+		{
+		    TerrainHalfSize = LevelBarrier->GetHalfSize();
+		}
+		
+	}
 }
 

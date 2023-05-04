@@ -30,18 +30,14 @@ public:
 	void SetActive(bool InActive);
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	bool IsActive();
-	// UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
-	// float GetLifeSpan();
-	// UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
-	// FTimerHandle GetLifeSpanTimerMy();
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	void Deactivate();
 
-public:
-	UPROPERTY(VisibleAnywhere,BlueprintReadWrite, Category = "Object Pool")
+private:
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite, Category = "Object Pool", meta = (AllowPrivateAccess = "true"))
 	bool bIsActive;
-	UPROPERTY(VisibleAnywhere,BlueprintReadWrite, Category = "Object Pool")
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite, Category = "Object Pool", meta = (AllowPrivateAccess = "true"))
 	float LifeSpan;
-	UPROPERTY(BlueprintReadWrite, Category = "Object Pool")
+	UPROPERTY(BlueprintReadWrite, Category = "Object Pool", meta = (AllowPrivateAccess = "true"))
 	FTimerHandle LifeSpanTimer;
 };

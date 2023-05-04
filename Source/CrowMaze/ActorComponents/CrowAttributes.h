@@ -24,14 +24,18 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
+#pragma region Getters & Setters
+
+	int32 GetCurrentLife() const { return CurrentLife;}
+	int32 GetStartingLife() const { return StartingLife;}
+
+#pragma endregion
+	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-public:
 	void DrainStamina(float Amount);
 	void RestoreStamina(float Amount);
 	void ModifyLife(int LifeToAdd);
 	float GetStaminaPercent();
-
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnStaminaChangedSignature OnStaminaChanged;

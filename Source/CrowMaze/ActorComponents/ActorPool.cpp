@@ -7,18 +7,11 @@
 // Sets default values for this component's properties
 UActorPool::UActorPool()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-
-	// ...
 }
 
 UActorPool::~UActorPool()
 {
-	
-	UE_LOG(LogTemp,Warning, TEXT("I got destroyed"))
-
 }
 
 
@@ -46,12 +39,6 @@ APoolableActorAbstact* UActorPool::GetPooledActorBP()
 }
 
 
-//
-// APoolableActorAbstact* UActorPool::GetPooledActorBP()
-// {
-// 	return GetPooledActor()->GetActorMy().Get();
-// }
-
 
 
 TObjectPtr<APoolableActorAbstact> UActorPool::GetPooledActor()
@@ -73,7 +60,6 @@ TObjectPtr<APoolableActorAbstact> UActorPool::GetPooledActor()
 		UE_LOG(LogTemp,Warning, TEXT("Tried to spawn an actor without sucess"))
 		return nullptr;
 	}
-	UE_LOG(LogTemp,Warning, TEXT("Spawned one more"))
 	return SpawnActorToPool();
 }
 

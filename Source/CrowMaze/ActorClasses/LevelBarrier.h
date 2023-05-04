@@ -27,15 +27,39 @@ public:
 	TArray<class UObstaclePoint*> GetObstaclePoints();
 	
 	void AttachObstacle(TObjectPtr<class AObstacle> ObstacleToAttach);
-
+	UFUNCTION(BlueprintCallable)
+	void FindCrowPlayer();
+	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
+	float GetHalfSize();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetHalfSize();
 	UFUNCTION(BlueprintCallable)
 	void ActivateSpeed(float GameModeSpeed);
+	UFUNCTION(BlueprintCallable)
+	void OnBeginOverlapSpawnNewTile(AActor* OtherActor);
+	
 private:
+	void DestroyAttachedObstacles();
+	
+private:
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "LevelBarrier|Setup", meta = (AllowPrivateAccess ="true"))
+	FVector MoveDirection = FVector(-1.0f,0.f,0.f);
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "LevelBarrier|Setup", meta = (AllowPrivateAccess ="true"))
+	FName PlayerTag = "CrowPlayer";
+#pragma region Cached
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "LevelBarrier|VisibleForDebugging", meta = (AllowPrivateAccess ="true"))
+	class ACrow* CrowPlayer;
+	UPROPERTY()
+	class ACrowMazeGameModeBase* CrowMazeGameMode;
+#pragma endregion 
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite, Category = "LevelBarrier|VisibleForDebugging", meta = (AllowPrivateAccess ="true"))
 	float MoveSpeed;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<class AObstacle>> AttachedObstacles;
 
+	bool bHasOverlappedOnce = false;
+	bool bIsCreated = false;
 	
 	
 };

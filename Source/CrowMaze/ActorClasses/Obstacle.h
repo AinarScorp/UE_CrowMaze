@@ -28,6 +28,7 @@ public:
 private:
 	UPROPERTY(EditAnywhere)
 	float ObstacleHitDamage = 1;
-	bool bHasHitPlayerOnce = false;
+	UPROPERTY()
+	TArray<AActor*> HitActors;
 	
 };

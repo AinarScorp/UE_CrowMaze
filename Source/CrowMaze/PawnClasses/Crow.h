@@ -23,32 +23,45 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+public:	
+	virtual void Tick(float DeltaTime) override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	UFUNCTION(BlueprintNativeEvent)
+	void ExecuteDeath();
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	bool IsGrounded();
+
 private:
+	void CreateComponents();
+	void SetupEnhancedController() const;
+	
+	void SteerBird(const FInputActionValue& Value);
+	
+public:
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnDamageTakenSignature OnDamageTaken;
+	
+private:
+
+#pragma region Inputs
 	UPROPERTY(EditAnywhere)
 	UInputMappingContext* BirdMappingContext;
 	UPROPERTY(EditAnywhere)
 	class UInputAction* MoveAction;
-	
-	void SteerBird(const FInputActionValue& Value);
+#pragma endregion
 
-public:	
-	virtual void Tick(float DeltaTime) override;
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	UPROPERTY(BlueprintAssignable)
-	FOnDamageTakenSignature OnDamageTaken;
-private:
+#pragma region Components
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USphereComponent> SphereComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> SkeletalMeshComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UCrowAttributes> CrowAttributes;
-
-
-	//functions
-	void CreateComponents();
-	void SetupEnhancedController() const;
-
-
+#pragma endregion
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess))
+	bool bIsAlive = true;
 };
+

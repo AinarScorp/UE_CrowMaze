@@ -9,6 +9,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnScoreChangedAGAINSignature, int, NewScore);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSpeedChangedSignature, float, NewMoveSpeed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameStartedSignature, ACrowMazeGameModeBase*, CrowGameMode);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameOver);
 
 
 /**
@@ -24,6 +25,11 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+#pragma region Getters & Setters
+	bool GetGameEndlessIsOn() const {return GameEndlessIsOn;}
+	float GetTileMoveSpeed() const { return TileMoveSpeed;}
+#pragma  endregion
+	
 	UFUNCTION(BlueprintCallable)
 	void SpawnStartingTiles();
 	UFUNCTION(BlueprintCallable)
@@ -39,8 +45,11 @@ public:
 	void IncreaseSpeed();
 	void ChangeGameSpeed(const float NewSpeed);
 	void StartEndlessRunner();
+	UFUNCTION(BlueprintNativeEvent)
+	void TriggerGameOver();
 	void TestWithThommy(int NewScoreToTest);
 
+	
 public:
 	UPROPERTY(BlueprintAssignable,BlueprintReadWrite)
 	FOnScoreChangedAGAINSignature OnScoreAgainChanged;
@@ -48,19 +57,28 @@ public:
 	FOnSpeedChangedSignature OnSpeedAgainChanged;
 	UPROPERTY(BlueprintAssignable,BlueprintReadWrite)
 	FOnGameStartedSignature OnGameStarted;
+	UPROPERTY(BlueprintAssignable, BlueprintReadOnly)
+	FOnGameOver OnGameOver;
 private:
 #pragma region Components
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "GrowGameMode|Components", meta = (AllowPrivateAccess = "true"))
 	class UActorPool* TerrainPool;
 #pragma endregion
-
+#pragma region Setup
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GrowGameMode|Setup", meta = (AllowPrivateAccess ="true"))
+	FName MiddlePointTag = "CentralPoint";
+#pragma endregion 
 #pragma region Tunning
+	UPROPERTY(EditAnywhere, Category = "GrowGameMode|Tunning")
+	float MaxTileSpeed = 20000;
 	UPROPERTY(EditAnywhere, Category = "GrowGameMode|Tunning")
 	float StartingTileSpeed = 5000;
 	UPROPERTY(EditAnywhere, Category = "GrowGameMode|Tunning")
 	int NumberOfStartingTiles = 10;
 	UPROPERTY(EditAnywhere, Category = "GrowGameMode|Tunning")
 	float SpeedIncrease = 500;
+	UPROPERTY(EditAnywhere, Category = "GrowGameMode|Tunning")
+	int SpeedIncreaseDivisorPerScoreIncrease = 0;
 	UPROPERTY(EditAnywhere, Category = "GrowGameMode|Tunning")
 	int SpeedIncreaseDivisorPerScore = 10;
 	UPROPERTY(EditAnywhere, Category = "GrowGameMode|Tunning",meta = (ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
@@ -82,7 +100,7 @@ private:
 	float TerrainHalfSize;
 	UPROPERTY(VisibleAnywhere, Category = "GrowGameMode|GameStats|VisibleForDebugging")
 	FVector TileSpawnLocation;
-	UPROPERTY(VisibleAnywhere, Category = "GrowGameMode|GameStats|VisibleForDebugging")
-	int32 CurrentScore = 13;
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "GrowGameMode|GameStats|VisibleForDebugging", meta = (AllowPrivateAccess ="true"))
+	int32 CurrentScore = 0;
 #pragma endregion
 };

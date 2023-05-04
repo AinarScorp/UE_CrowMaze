@@ -40,16 +40,6 @@ void APoolableActorAbstact::Deactivate_Implementation()
 	SetActive(false);
 }
 
-// FTimerHandle APoolableActorAbstact::GetLifeSpanTimerMy_Implementation()
-// {
-// 	
-// }
-
-// float APoolableActorAbstact::GetLifeSpan_Implementation()
-// {
-// 	return LifeSpan;
-//
-// }
 
 bool APoolableActorAbstact::IsActive_Implementation()
 {

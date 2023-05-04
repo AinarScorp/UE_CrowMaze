@@ -20,7 +20,7 @@ AObstacle::AObstacle()
 void AObstacle::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	HitActors.Empty();
 }
 
 // Called every frame
@@ -32,13 +32,13 @@ void AObstacle::Tick(float DeltaTime)
 
 void AObstacle::CollideWithThePlayer(AActor* CrowActor)
 {
-	if (bHasHitPlayerOnce || !Cast<ACrow>(CrowActor))
+	if (HitActors.Contains(CrowActor) || !Cast<ACrow>(CrowActor))
 	{
 		return;
 	}
-	bHasHitPlayerOnce =true;
+	HitActors.Add(CrowActor);
 	UGameplayStatics::ApplyDamage(CrowActor, ObstacleHitDamage, nullptr, this, UDamageType::StaticClass());
-	Destroy();
+	//Destroy();
 }
 
 void AObstacle::CreateObstacle_Implementation(ALevelBarrier* LevelBarrier)

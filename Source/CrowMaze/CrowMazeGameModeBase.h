@@ -9,6 +9,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnScoreChangedAGAINSignature, int, NewScore);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSpeedChangedSignature, float, NewMoveSpeed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameStartedSignature, ACrowMazeGameModeBase*, CrowGameMode);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGamePausedSignature, ACrowMazeGameModeBase*, CrowGameMode);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameOver);
 
 
@@ -36,6 +37,10 @@ public:
 	void TriggerGameOver();
 	void RemoveObstacleFromList(class AObstacle* Obstacle);
 	void RewardPlayersByRemovingObstacle();
+	UFUNCTION(BlueprintCallable)
+	void StartEndlessRunner();
+	UFUNCTION(BlueprintCallable)
+	void PauseEndlessRunner();
 private:
 	void FindMiddlePointLocation(); //Use this to find position to start spawning tiles
 	void SpawnStartingTiles();
@@ -47,7 +52,9 @@ private:
 	bool ShouldIncreaseSpeed() const;
 	void IncreaseSpeed();
 	void ChangeGameSpeed(const float NewSpeed);
-	void StartEndlessRunner();
+	//TODO: Ask how to make annonymous functions with Dynamic delegates
+	UFUNCTION()
+	void FunctionToSubscribeToStartRunner(ACrowMazeGameModeBase* CrowMazeGameMode);
 
 
 public:
@@ -58,6 +65,8 @@ public:
 	FOnSpeedChangedSignature OnSpeedAgainChanged;
 	UPROPERTY(BlueprintAssignable,BlueprintReadWrite)
 	FOnGameStartedSignature OnGameStarted;
+	UPROPERTY(BlueprintAssignable,BlueprintReadWrite)
+	FOnGamePausedSignature OnGamePaused;
 	UPROPERTY(BlueprintAssignable, BlueprintReadOnly)
 	FOnGameOver OnGameOver;
 #pragma endregion
@@ -114,4 +123,7 @@ private:
 	float DestroyObstacleRewardChance = 0.5;
 
 #pragma endregion
+	
+	float TileMoveSpeedBeforePause;
+	bool GameIsPaused;
 };

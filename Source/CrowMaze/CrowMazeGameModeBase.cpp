@@ -7,6 +7,7 @@
 #include "ActorClasses/Obstacle.h"
 #include "ActorClasses/PoolableActorAbstact.h"
 #include "ActorComponents/ActorPool.h"
+#include "GameFramework/HUD.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetArrayLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -20,6 +21,7 @@ void ACrowMazeGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 	FindMiddlePointLocation();
+	TileMoveSpeed = StartingTileSpeed;
 	SpawnStartingTiles();
 	ConnectSecondController();
 }
@@ -73,7 +75,8 @@ void ACrowMazeGameModeBase::SpawnStartingTiles()
 		AdjustSpawnLocation();
 	}
 	AdjustSpawnLocation(false);
-	StartEndlessRunner();
+	
+	//StartEndlessRunner();
 	
 }
 
@@ -81,6 +84,7 @@ void ACrowMazeGameModeBase::ConnectSecondController()
 {
 	APlayerController* SecondController = UGameplayStatics::CreatePlayer(GetWorld(),1, true);
 	SecondController->Possess(UGameplayStatics::GetPlayerPawn(GetWorld(),1));
+	
 }
 
 void ACrowMazeGameModeBase::SpawnTile(bool IsStartingTile)
@@ -169,12 +173,30 @@ void ACrowMazeGameModeBase::ChangeGameSpeed(const float NewSpeed)
 	OnSpeedAgainChanged.Broadcast(TileMoveSpeed);
 }
 
+void ACrowMazeGameModeBase::FunctionToSubscribeToStartRunner(ACrowMazeGameModeBase* CrowMazeGameMode)
+{
+	StartEndlessRunner();
+}
+
 void ACrowMazeGameModeBase::StartEndlessRunner()
 {
 	GameEndlessIsOn = true;
-	ChangeGameSpeed(StartingTileSpeed);
+	if (GameIsPaused)
+	{
+		TileMoveSpeed = TileMoveSpeedBeforePause;
+	}
+	ChangeGameSpeed(TileMoveSpeed);
 	OnGameStarted.Broadcast(this);
+	GameIsPaused = false;
+}
 
+void ACrowMazeGameModeBase::PauseEndlessRunner()
+{
+	GameEndlessIsOn = false;
+	TileMoveSpeedBeforePause = TileMoveSpeed;
+	ChangeGameSpeed(0);
+	OnGamePaused.Broadcast(this);
+	GameIsPaused = true;
 }
 
 void ACrowMazeGameModeBase::TriggerGameOver_Implementation()

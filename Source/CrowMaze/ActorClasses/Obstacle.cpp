@@ -4,8 +4,8 @@
 #include "Obstacle.h"
 
 #include "LevelBarrier.h"
+#include "CrowMaze/CrowMazeGameModeBase.h"
 #include "CrowMaze/PawnClasses/Crow.h"
-#include "CrowMaze/SceneComponents/ObstaclePoint.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetArrayLibrary.h"
 
@@ -14,6 +14,7 @@ AObstacle::AObstacle()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	HitCrow = false;
 }
 
 // Called when the game starts or when spawned
@@ -21,6 +22,7 @@ void AObstacle::BeginPlay()
 {
 	Super::BeginPlay();
 	HitActors.Empty();
+	HitCrow = false;
 }
 
 // Called every frame
@@ -30,6 +32,16 @@ void AObstacle::Tick(float DeltaTime)
 
 }
 
+// void AObstacle::RemoveObstacle()
+// {
+// 	AGameModeBase* GameModeBase = UGameplayStatics::GetGameMode(GetWorld());
+// 	if (ACrowMazeGameModeBase* CrowMazeGameMode  = Cast<ACrowMazeGameModeBase>(GameModeBase))
+// 	{
+// 		CrowMazeGameMode->RemoveObstacleFromList(this);
+// 	}
+// 	this->Destroy();
+// }
+
 void AObstacle::CollideWithThePlayer(AActor* CrowActor)
 {
 	if (HitActors.Contains(CrowActor) || !Cast<ACrow>(CrowActor))
@@ -38,6 +50,7 @@ void AObstacle::CollideWithThePlayer(AActor* CrowActor)
 	}
 	HitActors.Add(CrowActor);
 	UGameplayStatics::ApplyDamage(CrowActor, ObstacleHitDamage, nullptr, this, UDamageType::StaticClass());
+	HitCrow = true;
 	//Destroy();
 }
 
@@ -47,10 +60,10 @@ void AObstacle::CreateObstacle_Implementation(ALevelBarrier* LevelBarrier)
 	{
 		return;
 	}
+	//ConnectedLevelBarrier = LevelBarrier;
 	LevelBarrier->AttachObstacle(this);
 	AttachToActor(LevelBarrier, FAttachmentTransformRules::KeepWorldTransform);
-	TArray<UObstaclePoint*> ObstaclePoints = LevelBarrier->GetObstaclePoints();
-
+	
 	SetActorLocation(LevelBarrier->GetActorLocation());
 }
 

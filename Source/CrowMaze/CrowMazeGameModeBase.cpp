@@ -24,6 +24,30 @@ void ACrowMazeGameModeBase::BeginPlay()
 	ConnectSecondController();
 }
 
+void ACrowMazeGameModeBase::RemoveObstacleFromList(AObstacle* Obstacle)
+{
+	if (ListOfSpawnedObstacles.Contains(Obstacle))
+	{
+		ListOfSpawnedObstacles.Remove(Obstacle);
+	}
+}
+
+void ACrowMazeGameModeBase::RewardPlayersByRemovingObstacle()
+{
+	if (!UKismetMathLibrary::RandomBoolWithWeight(DestroyObstacleRewardChance))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("I tried removing obstacle"))
+		DestroyObstacleRewardChance += FMath::Clamp(DestroyObstacleRewardChance +RewardChanceIncreaseUponFailure,0,1 );
+		return;
+	}
+	if (ListOfSpawnedObstacles.Num() > 0)
+	{
+		DestroyObstacleRewardChance = DestroyObstacleRewardDefaultChance;
+		UE_LOG(LogTemp, Warning, TEXT("I REMOVED  obstacle WHOAH"))
+		ListOfSpawnedObstacles[0]->Destroy();
+	}
+}
+
 void ACrowMazeGameModeBase::FindMiddlePointLocation()
 {
 	TArray<AActor*> OutActors;
@@ -57,7 +81,6 @@ void ACrowMazeGameModeBase::ConnectSecondController()
 {
 	APlayerController* SecondController = UGameplayStatics::CreatePlayer(GetWorld(),1, true);
 	SecondController->Possess(UGameplayStatics::GetPlayerPawn(GetWorld(),1));
-
 }
 
 void ACrowMazeGameModeBase::SpawnTile(bool IsStartingTile)
@@ -96,6 +119,7 @@ void ACrowMazeGameModeBase::SpawnObstacle(ALevelBarrier* LevelBarrier)
 	ActorSpawnParameters.Owner =LevelBarrier;
 	AObstacle* Obstacle = World->SpawnActor<AObstacle>(ObstacleShapes[RandomIndex], FVector(), FRotator(),ActorSpawnParameters);
 	Obstacle->CreateObstacle(LevelBarrier);
+	ListOfSpawnedObstacles.AddUnique(Obstacle);
 }
 
 void ACrowMazeGameModeBase::AdjustSpawnLocation(bool InsideTheLoop)

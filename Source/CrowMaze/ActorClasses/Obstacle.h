@@ -18,15 +18,18 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-public:	
+public:
+#pragma region Getters And Setters
+	bool GetHitCrow() const{return HitCrow;}
+#pragma endregion 
 	virtual void Tick(float DeltaTime) override;
-
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void CreateObstacle(class ALevelBarrier* LevelBarrier);
 	UFUNCTION(BlueprintCallable)
 	void CollideWithThePlayer(AActor* CrowPawn);
 private:
-	UPROPERTY(EditAnywhere)
+	bool HitCrow;
+	UPROPERTY(EditDefaultsOnly)
 	float ObstacleHitDamage = 1;
 	UPROPERTY()
 	TArray<AActor*> HitActors;

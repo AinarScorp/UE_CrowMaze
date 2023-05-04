@@ -21,8 +21,6 @@ protected:
 public:
 
 #pragma region Getters & Setters
-	UFUNCTION(BlueprintImplementableEvent)
-	TArray<class UObstaclePoint*> GetObstaclePoints();
 	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
 	float GetHalfSize();
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)

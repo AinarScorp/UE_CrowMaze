@@ -23,7 +23,7 @@ class CROWMAZE_API ACrowMazeGameModeBase : public AGameModeBase
 
 protected:
 	virtual void BeginPlay() override;
-
+	
 public:
 #pragma region Getters & Setters
 	bool GetGameEndlessIsOn() const {return GameEndlessIsOn;}
@@ -34,7 +34,8 @@ public:
 	void SpawnTile(bool IsStartingTile);
 	UFUNCTION(BlueprintNativeEvent)
 	void TriggerGameOver();
-
+	void RemoveObstacleFromList(class AObstacle* Obstacle);
+	void RewardPlayersByRemovingObstacle();
 private:
 	void FindMiddlePointLocation(); //Use this to find position to start spawning tiles
 	void SpawnStartingTiles();
@@ -90,6 +91,10 @@ private:
 	int SpeedIncreaseDivisorPerScore = 10;
 	UPROPERTY(EditAnywhere, Category = "GrowGameMode|Tunning",meta = (ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
 	float ObstacleSpawnChance;
+	UPROPERTY(EditAnywhere, Category = "GrowGameMode|Tunning",meta = (ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	float DestroyObstacleRewardDefaultChance = 0.5;
+	UPROPERTY(EditAnywhere, Category = "GrowGameMode|Tunning",meta = (ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	float RewardChanceIncreaseUponFailure = 0.1;
 #pragma endregion
 
 #pragma region VisibleForDebugging
@@ -103,5 +108,10 @@ private:
 	FVector TileSpawnLocation;
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "GrowGameMode|GameStats|VisibleForDebugging", meta = (AllowPrivateAccess ="true"))
 	int32 CurrentScore = 0;
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "GrowGameMode|GameStats|VisibleForDebugging", meta = (AllowPrivateAccess ="true"))
+	TArray<class AObstacle*> ListOfSpawnedObstacles;
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "GrowGameMode|GameStats|VisibleForDebugging", meta = (AllowPrivateAccess ="true"))
+	float DestroyObstacleRewardChance = 0.5;
+
 #pragma endregion
 };

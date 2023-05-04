@@ -16,7 +16,7 @@ ALevelBarrier::ALevelBarrier()
 void ALevelBarrier::BeginPlay()
 {
 	Super::BeginPlay();
-	if (bIsCreated )
+	if (bIsCreated)
 	{
 		return;
 	}
@@ -32,15 +32,12 @@ void ALevelBarrier::Tick(float DeltaTime)
 	SetActorLocation(TargetLocation);
 }
 
+
 void ALevelBarrier::SpawnActor_Implementation(const FVector& NewLocation, const FRotator& NewRotation)
 {
 	Super::SpawnActor_Implementation(NewLocation, NewRotation);
 	bHasOverlappedOnce = false;
-	if (AttachedObstacles.Num()<1)
-	{
-		return;
-	}
-	DestroyAttachedObstacles();
+
 }
 
 void ALevelBarrier::AttachObstacle(TObjectPtr<AObstacle> ObstacleToAttach)
@@ -50,7 +47,6 @@ void ALevelBarrier::AttachObstacle(TObjectPtr<AObstacle> ObstacleToAttach)
 
 void ALevelBarrier::SubscribeOnGameSpeedChange()
 {
-		
 	AGameModeBase* GameModeBase = UGameplayStatics::GetGameMode(GetWorld());
 	if (!GameModeBase)
 	{
@@ -72,7 +68,7 @@ void ALevelBarrier::SubscribeOnGameSpeedChange()
 void ALevelBarrier::FindCrowPlayer()
 {
 	TArray<AActor*> OutActors;
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(),PlayerTag,OutActors);
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), PlayerTag, OutActors);
 	if (OutActors.Num() <= 0)
 	{
 		return;
@@ -85,7 +81,6 @@ void ALevelBarrier::FindCrowPlayer()
 }
 
 
-
 void ALevelBarrier::ActivateSpeed(float GameModeSpeed)
 {
 	MoveSpeed = GameModeSpeed;
@@ -93,23 +88,37 @@ void ALevelBarrier::ActivateSpeed(float GameModeSpeed)
 
 void ALevelBarrier::OnBeginOverlapSpawnNewTile(AActor* OtherActor)
 {
-	if ( bHasOverlappedOnce||CrowPlayer == nullptr || OtherActor != CrowPlayer || !CrowMazeGameMode)
+	if (bHasOverlappedOnce || CrowPlayer == nullptr || OtherActor != CrowPlayer || !CrowMazeGameMode)
 	{
 		return;
 	}
 	CrowMazeGameMode->SpawnTile(false);
 	SetLifeSpan(3.0);
 	bHasOverlappedOnce = true;
+	if (AttachedObstacles.Num() < 1)
+	{
+		return;
+	}
+	DestroyAttachedObstacles();
 }
 
 void ALevelBarrier::DestroyAttachedObstacles()
 {
 	for (TObjectPtr<AObstacle> Obstacle : AttachedObstacles)
 	{
-		if (Obstacle != nullptr)
+		if (Obstacle == nullptr)
 		{
-			Obstacle->Destroy();
+			return;
 		}
+		if (CrowMazeGameMode)
+		{
+			CrowMazeGameMode->RemoveObstacleFromList(Obstacle);
+			if (!Obstacle->GetHitCrow())
+			{
+				CrowMazeGameMode->RewardPlayersByRemovingObstacle();
+			}
+		}
+		Obstacle->Destroy();
 	}
 	AttachedObstacles.Empty();
 }
@@ -118,8 +127,6 @@ void ALevelBarrier::DestroyAttachedObstacles()
 // void ALevelBarrier::GetObstaclePoints_Implementation(TArray<USceneComponent*>& ObstaclePoints)
 // {
 // }
-
-
 
 
 //

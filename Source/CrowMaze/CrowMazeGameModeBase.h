@@ -31,26 +31,26 @@ public:
 #pragma  endregion
 	
 	UFUNCTION(BlueprintCallable)
-	void SpawnStartingTiles();
-	UFUNCTION(BlueprintCallable)
 	void SpawnTile(bool IsStartingTile);
-	void SpawnObstacle(class ALevelBarrier* LevelBarrier);
 	UFUNCTION(BlueprintNativeEvent)
+	void TriggerGameOver();
+
+private:
+	void FindMiddlePointLocation(); //Use this to find position to start spawning tiles
+	void SpawnStartingTiles();
+	void ConnectSecondController();
+	void SpawnObstacle(class ALevelBarrier* LevelBarrier);
 	void SetHalfSize();
-	UFUNCTION(BlueprintCallable)
 	void AdjustSpawnLocation(bool InsideTheLoop = true);
-	UFUNCTION(BlueprintCallable)
 	void IncreaseScore();
-	bool ShouldIncreaseSpeed();
+	bool ShouldIncreaseSpeed() const;
 	void IncreaseSpeed();
 	void ChangeGameSpeed(const float NewSpeed);
 	void StartEndlessRunner();
-	UFUNCTION(BlueprintNativeEvent)
-	void TriggerGameOver();
-	void TestWithThommy(int NewScoreToTest);
 
-	
+
 public:
+#pragma region Delegates/ Events
 	UPROPERTY(BlueprintAssignable,BlueprintReadWrite)
 	FOnScoreChangedAGAINSignature OnScoreAgainChanged;
 	UPROPERTY(BlueprintAssignable,BlueprintReadWrite)
@@ -59,15 +59,22 @@ public:
 	FOnGameStartedSignature OnGameStarted;
 	UPROPERTY(BlueprintAssignable, BlueprintReadOnly)
 	FOnGameOver OnGameOver;
+#pragma endregion
+	
 private:
+
 #pragma region Components
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "GrowGameMode|Components", meta = (AllowPrivateAccess = "true"))
 	class UActorPool* TerrainPool;
 #pragma endregion
+
 #pragma region Setup
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GrowGameMode|Setup", meta = (AllowPrivateAccess ="true"))
 	FName MiddlePointTag = "CentralPoint";
-#pragma endregion 
+	UPROPERTY(EditAnywhere, Category = "GrowGameMode|Setup")
+	TArray<TSubclassOf<class AObstacle>> ObstacleShapes;
+#pragma endregion
+
 #pragma region Tunning
 	UPROPERTY(EditAnywhere, Category = "GrowGameMode|Tunning")
 	float MaxTileSpeed = 20000;
@@ -83,13 +90,7 @@ private:
 	int SpeedIncreaseDivisorPerScore = 10;
 	UPROPERTY(EditAnywhere, Category = "GrowGameMode|Tunning",meta = (ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
 	float ObstacleSpawnChance;
-	
 #pragma endregion
-
-
-	UPROPERTY(EditAnywhere, Category = "GrowGameMode|Setup")
-	TArray<TSubclassOf<class AObstacle>> ObstacleShapes;
-	
 
 #pragma region VisibleForDebugging
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "GrowGameMode|GameStats|VisibleForDebugging", meta = (AllowPrivateAccess ="true"))

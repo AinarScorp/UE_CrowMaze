@@ -52,20 +52,6 @@ void AObstacle::CreateObstacle_Implementation(ALevelBarrier* LevelBarrier)
 	TArray<UObstaclePoint*> ObstaclePoints = LevelBarrier->GetObstaclePoints();
 
 	SetActorLocation(LevelBarrier->GetActorLocation());
-
-	// const int RandomIndex = FMath::RandRange(0, AcceptableObstaclePositions2.Num()-1);
-	// const EObstaclePositionTypes RandomPositionType = AcceptableObstaclePositions2[RandomIndex];
-	//
-	// for (const UObstaclePoint* ObstaclePoint : ObstaclePoints)
-	// {
-	// 	if (ObstaclePoint->ObstaclePositionType == RandomPositionType)
-	// 	{
-	// 		SetActorLocation(ObstaclePoint->GetComponentLocation());
-	// 		break;
-	// 	}
-	// }
-
-	
 }
 
 

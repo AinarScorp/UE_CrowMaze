@@ -38,11 +38,10 @@ void ACrow::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void ACrow::SetupEnhancedController() const
 {
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	const APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if (PlayerController != nullptr)
 	{
-		UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-		if (Subsystem)
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(BirdMappingContext, 0);
 		}
@@ -89,7 +88,7 @@ void ACrow::SteerBird(const FInputActionValue& Value)
 
 
 
-void ACrow::ExecuteDeath_Implementation()
+void ACrow::ExecuteDeath()
 {
 	bIsAlive = false;
 	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
@@ -109,8 +108,8 @@ void ACrow::ExecuteDeath_Implementation()
 }
 bool ACrow::IsGrounded()
 {
-	FVector TargetLocation;
-	TArray<AActor*> ActorsToIgnore;
+	const FVector TargetLocation;
+	const TArray<AActor*> ActorsToIgnore;
 	FHitResult HitResult;
 	
 	return UKismetSystemLibrary::LineTraceSingle(

@@ -27,12 +27,11 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	UFUNCTION(BlueprintNativeEvent)
-	void ExecuteDeath();
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	bool IsGrounded();
 
 private:
+	void ExecuteDeath();
 	void CreateComponents();
 	void SetupEnhancedController() const;
 	
@@ -44,6 +43,14 @@ public:
 	FOnDamageTakenSignature OnDamageTaken;
 	
 private:
+#pragma region Components
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class USphereComponent> SphereComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> SkeletalMeshComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UCrowAttributes> CrowAttributes;
+#pragma endregion
 
 #pragma region Inputs
 	UPROPERTY(EditAnywhere)
@@ -53,14 +60,6 @@ private:
 #pragma endregion
 
 
-#pragma region Components
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class USphereComponent> SphereComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<USkeletalMeshComponent> SkeletalMeshComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UCrowAttributes> CrowAttributes;
-#pragma endregion
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess))
 	bool bIsAlive = true;
 };

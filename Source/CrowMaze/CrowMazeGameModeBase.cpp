@@ -19,6 +19,13 @@ ACrowMazeGameModeBase::ACrowMazeGameModeBase()
 void ACrowMazeGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
+	FindMiddlePointLocation();
+	SpawnStartingTiles();
+	ConnectSecondController();
+}
+
+void ACrowMazeGameModeBase::FindMiddlePointLocation()
+{
 	TArray<AActor*> OutActors;
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(),MiddlePointTag,OutActors);
 	if (OutActors.Num() <= 0)
@@ -27,7 +34,6 @@ void ACrowMazeGameModeBase::BeginPlay()
 	}
 	//const FVector PlayerStartLocation = UGameplayStatics::GetPlayerPawn(GetWorld(),0)->GetActorLocation();
 	TileSpawnLocation = OutActors[0]->GetActorLocation();
-	SpawnStartingTiles();
 }
 
 void ACrowMazeGameModeBase::SpawnStartingTiles()
@@ -45,6 +51,13 @@ void ACrowMazeGameModeBase::SpawnStartingTiles()
 	AdjustSpawnLocation(false);
 	StartEndlessRunner();
 	
+}
+
+void ACrowMazeGameModeBase::ConnectSecondController()
+{
+	APlayerController* SecondController = UGameplayStatics::CreatePlayer(GetWorld(),1, true);
+	SecondController->Possess(UGameplayStatics::GetPlayerPawn(GetWorld(),1));
+
 }
 
 void ACrowMazeGameModeBase::SpawnTile(bool IsStartingTile)
@@ -104,7 +117,7 @@ void ACrowMazeGameModeBase::IncreaseScore()
 
 }
 
-bool ACrowMazeGameModeBase::ShouldIncreaseSpeed()
+bool ACrowMazeGameModeBase::ShouldIncreaseSpeed() const
 {
 	if (TileMoveSpeed >=MaxTileSpeed)
 	{
@@ -142,21 +155,15 @@ void ACrowMazeGameModeBase::StartEndlessRunner()
 
 void ACrowMazeGameModeBase::TriggerGameOver_Implementation()
 {
-	
 	ChangeGameSpeed(0);
-	UE_LOG(LogTemp, Warning, TEXT("Game is over with The score of: %i"), CurrentScore)
 	OnGameOver.Broadcast();
 }
 
-void ACrowMazeGameModeBase::TestWithThommy(int NewScoreToTest)
-{
-}
 
 
-void ACrowMazeGameModeBase::SetHalfSize_Implementation()
+void ACrowMazeGameModeBase::SetHalfSize()
 {
-	APoolableActorAbstact* PoolableActor=TerrainPool->GetPooledActor();
-	if (PoolableActor)
+	if (APoolableActorAbstact* PoolableActor=TerrainPool->GetPooledActor())
 	{
 		if (ALevelBarrier* LevelBarrier = Cast<ALevelBarrier>(PoolableActor))
 		{

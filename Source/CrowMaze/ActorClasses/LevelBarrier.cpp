@@ -22,23 +22,7 @@ void ALevelBarrier::BeginPlay()
 	}
 	SetHalfSize();
 	FindCrowPlayer();
-	
-	AGameModeBase* GameModeBase = UGameplayStatics::GetGameMode(GetWorld());
-	if (!GameModeBase)
-	{
-		return;
-	}
-	CrowMazeGameMode = Cast<ACrowMazeGameModeBase>(GameModeBase);
-	if (!CrowMazeGameMode)
-	{
-		return;
-	}
-	CrowMazeGameMode->OnSpeedAgainChanged.AddDynamic(this, &ALevelBarrier::ActivateSpeed);
-
-	if (CrowMazeGameMode->GetGameEndlessIsOn())
-	{
-		ActivateSpeed(CrowMazeGameMode->GetTileMoveSpeed());
-	}
+	SubscribeOnGameSpeedChange();
 }
 
 void ALevelBarrier::Tick(float DeltaTime)
@@ -64,6 +48,27 @@ void ALevelBarrier::AttachObstacle(TObjectPtr<AObstacle> ObstacleToAttach)
 	AttachedObstacles.Add(ObstacleToAttach);
 }
 
+void ALevelBarrier::SubscribeOnGameSpeedChange()
+{
+		
+	AGameModeBase* GameModeBase = UGameplayStatics::GetGameMode(GetWorld());
+	if (!GameModeBase)
+	{
+		return;
+	}
+	CrowMazeGameMode = Cast<ACrowMazeGameModeBase>(GameModeBase);
+	if (!CrowMazeGameMode)
+	{
+		return;
+	}
+	CrowMazeGameMode->OnSpeedAgainChanged.AddDynamic(this, &ALevelBarrier::ActivateSpeed);
+
+	if (CrowMazeGameMode->GetGameEndlessIsOn())
+	{
+		ActivateSpeed(CrowMazeGameMode->GetTileMoveSpeed());
+	}
+}
+
 void ALevelBarrier::FindCrowPlayer()
 {
 	TArray<AActor*> OutActors;
@@ -79,9 +84,7 @@ void ALevelBarrier::FindCrowPlayer()
 	}
 }
 
-void ALevelBarrier::SetHalfSize_Implementation()
-{
-}
+
 
 void ALevelBarrier::ActivateSpeed(float GameModeSpeed)
 {

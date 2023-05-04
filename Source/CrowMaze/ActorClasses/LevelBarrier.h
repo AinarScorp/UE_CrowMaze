@@ -20,42 +20,48 @@ protected:
 
 public:
 
-	virtual void Tick(float DeltaTime) override;
-	
-	virtual void SpawnActor_Implementation(const FVector& NewLocation, const FRotator& NewRotation) override;
+#pragma region Getters & Setters
 	UFUNCTION(BlueprintImplementableEvent)
 	TArray<class UObstaclePoint*> GetObstaclePoints();
-	
-	void AttachObstacle(TObjectPtr<class AObstacle> ObstacleToAttach);
-	UFUNCTION(BlueprintCallable)
-	void FindCrowPlayer();
 	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
 	float GetHalfSize();
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void SetHalfSize();
-	UFUNCTION(BlueprintCallable)
-	void ActivateSpeed(float GameModeSpeed);
+#pragma endregion
+	
+	virtual void Tick(float DeltaTime) override;
+	virtual void SpawnActor_Implementation(const FVector& NewLocation, const FRotator& NewRotation) override;
+	void AttachObstacle(TObjectPtr<class AObstacle> ObstacleToAttach);
+	
+private:
+	void SubscribeOnGameSpeedChange();
 	UFUNCTION(BlueprintCallable)
 	void OnBeginOverlapSpawnNewTile(AActor* OtherActor);
 	
-private:
+	UFUNCTION(BlueprintCallable)
+	void ActivateSpeed(float GameModeSpeed);
+	void FindCrowPlayer();
 	void DestroyAttachedObstacles();
 	
 private:
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "LevelBarrier|Setup", meta = (AllowPrivateAccess ="true"))
-	FVector MoveDirection = FVector(-1.0f,0.f,0.f);
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "LevelBarrier|Setup", meta = (AllowPrivateAccess ="true"))
-	FName PlayerTag = "CrowPlayer";
 #pragma region Cached
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "LevelBarrier|VisibleForDebugging", meta = (AllowPrivateAccess ="true"))
 	class ACrow* CrowPlayer;
 	UPROPERTY()
 	class ACrowMazeGameModeBase* CrowMazeGameMode;
-#pragma endregion 
+#pragma endregion
+#pragma region Setup
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "LevelBarrier|Setup", meta = (AllowPrivateAccess ="true"))
+	FVector MoveDirection = FVector(-1.0f,0.f,0.f);
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "LevelBarrier|Setup", meta = (AllowPrivateAccess ="true"))
+	FName PlayerTag = "CrowPlayer";
+#pragma endregion
+
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite, Category = "LevelBarrier|VisibleForDebugging", meta = (AllowPrivateAccess ="true"))
 	float MoveSpeed;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "LevelBarrier|VisibleForDebugging")
 	TArray<TObjectPtr<class AObstacle>> AttachedObstacles;
 
 	bool bHasOverlappedOnce = false;

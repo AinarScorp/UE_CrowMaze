@@ -83,8 +83,10 @@ void ACrowMazeGameModeBase::SpawnStartingTiles()
 void ACrowMazeGameModeBase::ConnectSecondController()
 {
 	APlayerController* SecondController = UGameplayStatics::CreatePlayer(GetWorld(),1, true);
-	SecondController->Possess(UGameplayStatics::GetPlayerPawn(GetWorld(),1));
-	
+	if (SecondController)
+	{
+		SecondController->Possess(UGameplayStatics::GetPlayerPawn(GetWorld(),1));
+	}
 }
 
 void ACrowMazeGameModeBase::SpawnTile(bool IsStartingTile)

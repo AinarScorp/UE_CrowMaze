@@ -1,4 +1,33 @@
+Part 2
+Code Structure:
+I tried to keep my code clean and orginised. I followed the following structure : First Protected functions, then Public and Private functions respectively, then Protected,public and private variables respectively
+I used #pragma regions to orginise functions and variables even more, so it doesn't get messy.
 
+Workflow:
+Throwout the project I was programming in both blueprints and C++, mostly I was trying things out in BP and then moved stuff for C++ for practice.
+Therefore I had a lot Ufunctions(blueprintCallable) and UProperties(BlueprintReadWrite). In addition to that, I used
+UFUNCTION(BlueprintNativeEvent) and	UFUNCTION(BlueprintImplementableEvent) so I could use blueprints in a very convenient way and still continue with the use of C++.
+After using both blueprints and traditional coding I prefer more traditional way, bc it is easier to keep it clear for me, but ability to use both is really nice in Unreal.
+
+Inheritence:
+I used inheritance a little to put a base for poolable actors(how I want them to be handled)
+
+Protection:
+During the project I kept a lot of functions and variables in Public section for convenience, but it's because I was working alone. However, I was moving as much as I can to
+public sections, I only keep delegaes as my public variables the rest of the variables are privates and if I need to access them I use Getters (wrapped inside regions on the top).
+However, I use BlueprintReadOnly and BlueprintReadWrite quite heavily so I have access to variables in BP, but I tried to keep them BlueprintReadOnly as much as possible.
+
+Delegates:
+I tend to use a lot of events to avoid having god-classes and I prefer to subscribe my classes to certain events. A lot of my logic is done in GameMode class, so I don't want the game mode
+to access other classes and tell them what to do, instead I made delegates such as FOnScoreChanged or FOnSpeedChanged. I subscribe to them both inside C++ and blueprints.
+I tried making annonymous functions to subscribe to them, but I found it very challenging and will need to invest it more, I still dont' understand if it's possible to subscribe annonymous functions to
+Dynamic delegates
+
+Enums:
+I used enums for states in the beginning of the project, but I found other ways to implement what I needed, but I keep the file I had for one enumerator as an example of how I used them.
+
+
+Part 1
 I used blueprints for prototyping the project and slowly moving most of it into Cpp. I think it's very important to learn how to work with both Cpp and BP and how to
 interract between them so that programmers and designers can work together
 I learnt how to make things in Cpp and expose them in blueprints (things like functions, variables, enums)
